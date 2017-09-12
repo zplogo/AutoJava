@@ -1,0 +1,83 @@
+###parse('/produce/entity/templates/_class_copyright.vm')
+package $!{entity.group.packageName.replace("com.supconit.", "hc.")}.services.impl;
+
+import $!{entity.group.packageName}.entities.$!{entity.code};
+import $!{entity.group.packageName}.daos.$!{entity.code}Dao;
+
+import java.util.List;
+import hc.orm.AbstractBasicOrmService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import $!{entity.group.packageName}.services.$!{entity.code}Service;
+import hc.base.domains.Pageable;
+import org.springframework.stereotype.Service;
+/**
+ * @author $!{currentUser.email}
+ * @create $!{now}
+ * @since $!{version}
+ *
+ */
+@Service("$!{entity.group.module.project.code.toLowerCase()}_$!{entity.group.module.code.toLowerCase()}_$!{entity.group.code.toLowerCase()}_$!{entity.code.toLowerCase()}_service") 
+public class $!{entity.code}ServiceImpl extends AbstractBasicOrmService<$!{entity.code}, Long> implements $!{entity.code}Service {
+
+    @Autowired
+    private $!{entity.code}Dao    $!{GenerateHelper.toPropertyName($entity.code)}Dao;
+
+    @Override
+    @Transactional(readOnly = true)
+    public $!{entity.code} getById($!{primaryKey.type} id) {
+        return $!{GenerateHelper.toPropertyName($entity.code)}Dao.getById(id);
+    }
+
+    @Override
+    @Transactional
+    public void insert($!{entity.code} entity) {
+			$!{GenerateHelper.toPropertyName($entity.code)}Dao.insert(entity);
+    }
+
+    @Override
+    @Transactional
+    public void update($!{entity.code} entity) {
+			$!{GenerateHelper.toPropertyName($entity.code)}Dao.update(entity);
+    }
+
+    @Override
+    @Transactional
+    public void delete($!{entity.code} entity) {
+			$!{GenerateHelper.toPropertyName($entity.code)}Dao.delete(entity);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Pageable<$!{entity.code}> find(Pageable<$!{entity.code}> pager, $!{entity.code} condition) {
+        return $!{GenerateHelper.toPropertyName($entity.code)}Dao.findByPager(pager, condition);
+    }
+
+    @Transactional
+    public void deleteById($!{primaryKey.type} id) {
+		$!{entity.code} entity = new $!{entity.code}(id);
+        this.delete(entity);
+    }
+
+    @Override
+    @Transactional
+    public void batchDelete(String ids) {
+        String[] temp = ids.split(",");
+        final List<Long> condition = new ArrayList<Long>();
+        for(String id : temp){
+            condition.add(Long.parseLong(id));
+        }
+        $!{GenerateHelper.toPropertyName($entity.code)}Dao.batchDelete(new HashMap(){{put("ids",condition);}});
+    }
+
+    @Override
+    public $!{entity.code} getByCondition($!{entity.code} condition) {
+        $!{entity.code} entity = $!{GenerateHelper.toPropertyName($entity.code)}Dao.getByCondition(condition);
+        return entity;
+    }
+
+    @Override
+    public List<$!{entity.code}> getAllByCondition($!{entity.code} condition) {
+        return  $!{GenerateHelper.toPropertyName($entity.code)}Dao.getAllByCondition(condition);
+    }
+}

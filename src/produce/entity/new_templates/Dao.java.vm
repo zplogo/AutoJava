@@ -1,0 +1,51 @@
+###parse('/produce/entity/templates/_class_copyright.vm')
+package $!{entity.group.packageName.replace("com.supconit.", "hc.")}.daos;
+
+import javax.swing.text.html.parser.Entity;
+import hc.orm.BasicDao;
+import java.util.HashMap;
+import java.util.List;
+import $!{entity.group.packageName}.entities.$!{entity.code};
+import hc.base.domains.Pageable;
+
+/**
+ * @author $!{currentUser.email}
+ * @create $!{now}
+ * @since $!{version}
+ *
+ */
+public interface $!{entity.code}Dao extends BasicDao<$!{entity.code}, $!{primaryKey.type}> {
+
+    /**
+    * 根据条件查询实体
+    * @param entity
+    * @return
+    */
+        $!{entity.code} getByCondition($!{entity.code} entity);
+
+    /**
+    * 根据条件查询实体列表
+    * @param entity
+    * @return
+    */
+        List<$!{entity.code}> getAllByCondition($!{entity.code} entity);
+
+    /**
+    * 根据条件分页查询实体列表
+    * @param pageable
+    * @param condition
+    * @return
+    */
+    Pageable<$!{entity.code}> findByPager(Pageable<$!{entity.code}> pageable, $!{entity.code} condition);
+    /**
+     * 条件删除
+     * @param entity
+     * @return
+     */
+    int deleteByCondition($!{entity.code} entity);
+    /**
+    * 批量删除
+    * @param condition
+    */
+    int batchDelete(HashMap condition);
+}

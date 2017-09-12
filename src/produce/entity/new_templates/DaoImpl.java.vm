@@ -1,0 +1,53 @@
+###parse('/produce/entity/templates/_class_copyright.vm')
+package $!{entity.group.packageName.replace("com.supconit.", "hc.")}.daos.impl;
+
+import hc.orm.AbstractBasicDaoImpl;
+import java.util.List;
+import java.util.HashMap;
+import $!{entity.group.packageName}.entities.$!{entity.code};
+import $!{entity.group.packageName}.daos.$!{entity.code}Dao;
+import hc.base.domains.Pageable;
+import org.springframework.stereotype.Repository;
+/**
+ * @author $!{currentUser.email}
+ * @create $!{now}
+ * @since $!{version}
+ *
+ */
+@Repository("$!{entity.group.module.project.code.toLowerCase()}_$!{entity.group.module.code.toLowerCase()}_$!{entity.group.code.toLowerCase()}_$!{entity.code.toLowerCase()}_dao") 
+public class $!{entity.code}DaoImpl extends  AbstractBasicDaoImpl<$!{entity.code}, $!{primaryKey.type}> implements $!{entity.code}Dao{
+    private static final String NAMESPACE = $!{entity.code}.class.getName();
+
+    @Override
+    protected String getNamespace() {
+        return NAMESPACE;
+    }
+
+    @Override
+    public $!{entity.code} getByCondition($!{entity.code} condition) {
+        return this.selectOne("getByCondition", condition);
+    }
+
+    @Override
+    public List<$!{entity.code}> getAllByCondition($!{entity.code} condition) {
+        return this.selectList("getByCondition", condition);
+    }
+
+    @Override
+    public Pageable<$!{entity.code}> findByPager(Pageable<$!{entity.code}> pager, $!{entity.code} condition) {
+        return this.findByPager(pager, "selectPager", "countPager", condition);
+    }
+
+    @Override
+    public int batchDelete(HashMap condition) {
+        return this.delete("batchDelete", condition);
+    }
+
+    public $!{entity.code} getById($!{primaryKey.type} id) {
+        return this.getByCondition(new $!{entity.code}(id));
+    }
+    @Override
+    public int deleteByCondition($!{entity.code} entity) {
+        return this.delete("deleteByCondition",entity);
+    }
+}

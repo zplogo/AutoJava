@@ -1,0 +1,16 @@
+###parse('/produce/entity/templates/_class_copyright.vm')
+package $!{entity.group.packageName}.daos.impl;
+
+import $!{entity.group.packageName.replace("com.supconit.", "hc.")}.daos.impl.Abstract$!{entity.code}DaoImpl;
+import $!{entity.group.packageName}.daos.$!{entity.code}Dao;
+import org.springframework.stereotype.Repository;
+/**
+ * @author $!{currentUser.email}
+ * @create $!{now}
+ * @since $!{version}
+ * 
+ */
+@Repository("$!{entity.group.module.project.code.toLowerCase()}_$!{entity.group.module.code.toLowerCase()}_$!{entity.group.code.toLowerCase()}_$!{entity.code.toLowerCase()}_dao")
+public class $!{entity.code}DaoImpl extends Abstract$!{entity.code}DaoImpl implements $!{entity.code}Dao{
+
+}

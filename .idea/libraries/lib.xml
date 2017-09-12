@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/commons-lang-2.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/classes12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-collections-3.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/velocity-1.7.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/freemarker.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

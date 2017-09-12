@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="lib">
+    <archive path="D:/development/中控信息/桐乡智慧交通指挥云平台/AutoJava/lib/commons-lang-2.6.jar" />
+    <archive path="D:/development/中控信息/桐乡智慧交通指挥云平台/AutoJava/lib/commons-collections-3.2.1.jar" />
+    <archive path="D:/development/中控信息/桐乡智慧交通指挥云平台/AutoJava/lib/freemarker.jar" />
+    <archive path="D:/development/中控信息/桐乡智慧交通指挥云平台/AutoJava/lib/velocity-1.7.jar" />
+    <archive path="D:/development/中控信息/桐乡智慧交通指挥云平台/AutoJava/lib/classes12.jar" />
+  </library>
+  <library name="lib">
+    <archive path="D:/development/中控信息/桐乡智慧交通指挥云平台/AutoJava/lib/commons-lang-2.6.jar" />
+    <archive path="D:/development/中控信息/桐乡智慧交通指挥云平台/AutoJava/lib/commons-collections-3.2.1.jar" />
+    <archive path="D:/development/中控信息/桐乡智慧交通指挥云平台/AutoJava/lib/classes12.jar" />
+    <archive path="D:/development/中控信息/桐乡智慧交通指挥云平台/AutoJava/lib/freemarker.jar" />
+    <archive path="D:/development/中控信息/桐乡智慧交通指挥云平台/AutoJava/lib/velocity-1.7.jar" />
+  </library>
+</eclipse-userlibraries>
+

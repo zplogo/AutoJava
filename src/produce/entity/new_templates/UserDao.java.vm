@@ -1,0 +1,13 @@
+###parse('/produce/entity/templates/_class_copyright.vm')
+package $!{entity.group.packageName}.daos;
+
+import $!{entity.group.packageName.replace("com.supconit.", "hc.")}.daos.Abstract$!{entity.code}Dao;
+/**
+ * @author $!{currentUser.email}
+ * @create $!{now}
+ * @since $!{version}
+ * 
+ */
+public interface $!{entity.code}Dao extends Abstract$!{entity.code}Dao {
+
+}

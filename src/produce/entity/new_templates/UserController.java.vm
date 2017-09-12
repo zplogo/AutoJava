@@ -1,0 +1,17 @@
+###parse('/produce/entity/templates/_class_copyright.vm')
+package $!{entity.group.packageName}.controllers;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import $!{entity.group.packageName.replace("com.supconit.", "hc.")}.controllers.Abstract$!{entity.code}Controller;
+import org.springframework.stereotype.Controller;
+/**
+ * @author $!{currentUser.email}
+ * @create $!{now}
+ * @since $!{version}
+ * 
+ */
+@Controller("$!{entity.group.module.project.code.toLowerCase()}_$!{entity.group.module.code.toLowerCase()}_$!{entity.group.code.toLowerCase()}_$!{entity.code.toLowerCase()}_controller")
+@RequestMapping("$!{baseUrl}")
+public class $!{entity.code}Controller extends Abstract$!{entity.code}Controller {
+
+}

@@ -1,0 +1,13 @@
+###parse('/produce/entity/templates/_class_copyright.vm')
+package $!{entity.group.packageName}.services;
+
+import $!{entity.group.packageName.replace("com.supconit.", "hc.")}.services.Abstract$!{entity.code}Service;
+/**
+ * @author $!{currentUser.email}
+ * @create $!{now}
+ * @since $!{version}
+ * 
+ */
+public interface $!{entity.code}Service extends Abstract$!{entity.code}Service {
+
+}

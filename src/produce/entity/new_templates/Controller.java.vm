@@ -1,0 +1,178 @@
+###parse('/produce/entity/templates/_class_copyright.vm')
+package
+
+import java.util.List;
+
+    $!{entity.group.packageName.replace("com.supconit.", "hc.")}.controllers;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.util.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import hc.base.domains.Pageable;
+import com.supconit.ticc.domains.NewPagination;
+import hc.base.domains.AjaxMessage;
+import hc.mvc.annotations.FormBean;
+import $!{entity.group.packageName}.entities.$!{entity.code};
+import $!{entity.group.packageName}.services.$!{entity.code}Service;
+import org.springframework.stereotype.Controller;
+
+/**
+ * @author $!{currentUser.email}
+ * @create $!{now}
+ * @since $!{version}
+ *
+ */
+@Controller("$!{entity.group.module.project.code.toLowerCase()}_$!{entity.group.module.code.toLowerCase()}_controller")
+@RequestMapping("$!{baseUrl}")
+public class $!{entity.code}Controller{
+
+	@Autowired
+	protected $!{entity.code}Service $!{GenerateHelper.toPropertyName($entity.code)}Service;
+
+    /**
+     * 系统日志
+     */
+    private transient static final Logger logger = LoggerFactory.getLogger($!{entity.code}Controller.class);
+
+    /**
+     * 打开list页面
+     *
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "list", method = RequestMethod.GET)
+    public String list(ModelMap model) {
+        return "list";
+    }
+
+    /**
+     * gird取分页数据
+     *
+     * @param pager     分页对象
+     * @param condition 查询条件
+     * @param model
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(
+            value = "list",
+            method = RequestMethod.POST
+    )
+    public Pageable<$!{entity.code}> dolist(NewPagination<$!{entity.code}> pager, $!{entity.code} condition, ModelMap model) {
+
+        this.$!{GenerateHelper.toPropertyName($entity.code)}Service.find(pager, condition);
+        return pager;
+    }
+
+    /**
+     * 查询指定条件的所有对象
+     * @param condition 查询条件
+     * @return
+     */
+    public List<$!{entity.code}> getAll($!{entity.code} condition){
+        return this.$!{GenerateHelper.toPropertyName($entity.code)}Service.getAllByCondition(condition);
+    }
+
+    /**
+     * 打开新增页面
+     *
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "add", method = RequestMethod.GET)
+    public String add(ModelMap model) {
+        return "add";
+    }
+
+    /**
+     * 打开编辑页面
+     *
+     * @param model
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "edit", method = RequestMethod.GET)
+    public String edit(ModelMap model, Long id) {
+        $!{entity.code} entity;
+        entity = this.$!{GenerateHelper.toPropertyName($entity.code)}Service.getById(id);
+        Assert.notNull(entity);
+        model.put("entity", entity);
+        return "edit";
+    }
+
+    /**
+     * 新增/编辑保存
+     *
+     * @param model
+     * @param entity
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "save", method = RequestMethod.POST)
+    public AjaxMessage save(ModelMap model, $!{entity.code} entity) {
+        try {
+            this.$!{GenerateHelper.toPropertyName($entity.code)}Service.save(entity);
+            return AjaxMessage.success();
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            return AjaxMessage.error(ex.getMessage());
+        }
+    }
+
+    /**
+     * 打开预览页面
+     *
+     * @param id
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = {"view"}, method = RequestMethod.GET)
+    public String view(@RequestParam(required = true) Long id, ModelMap model) {
+        $!{entity.code} entity = this.$!{GenerateHelper.toPropertyName($entity.code)}Service.getById(id);
+        Assert.notNull(entity);
+        model.put("entity", entity);
+        return "view";
+    }
+
+    /**
+     * 删除选中数据（非批量删除）
+     *
+     * @param entity
+     * @return
+     */
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    public AjaxMessage delete($!{entity.code} entity) {
+        try {
+            $!{GenerateHelper.toPropertyName($entity.code)}Service.delete(entity);
+            return AjaxMessage.success();
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            return AjaxMessage.error(ex.getMessage());
+        }
+    }
+
+    /**
+     * 批量删除
+     * @param ids
+     * @return
+     */
+    @RequestMapping(value = "batchDelete", method = RequestMethod.POST)
+    @ResponseBody
+    public AjaxMessage batchDelete(String ids){
+        try {
+            $!{GenerateHelper.toPropertyName($entity.code)}Service.batchDelete(ids);
+            return AjaxMessage.success();
+        }catch (Exception ex){
+            logger.error(ex.getMessage(),ex);
+            return AjaxMessage.error(ex.getMessage());
+        }
+    }
+}

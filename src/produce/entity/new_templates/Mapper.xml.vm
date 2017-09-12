@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://hc.supconit.com/mybatis-3-mapper.dtd">
+
+<!-- $!{entity.name} MAPPER ; CREATE AT $!{now} BY $!{currentUser.email}-->
+<mapper namespace="$!{entity.className}">
+
+	<sql id="SEQUENCE" lang="velocity">SELECT $!{seqName}.NEXTVAL FROM DUAL</sql>
+	
+	<resultMap type="$!{entity.className}" id="$!{entity.code}ResultMap">
+		#foreach($column in $columns)
+		<result property="$!{column.code}" column="$!{GenerateHelper.toColumnName($column.code)}"/>
+		#end
+	</resultMap>
+	
+	<!-- GET BY ID -->
+	<select id="getById" resultMap="$!{entity.code}ResultMap" parameterType="$!{primaryKey.type.toLowerCase()}" lang="velocity">
+		SELECT * FROM $!{entity.tableName} T0
+		WHERE
+			T0.$!{GenerateHelper.toColumnName($primaryKey.code)} = @{_parameter, jdbcType=$!{GenerateHelper.toJdbcType($primaryKey.type)}}
+			${j}if(${d}_databaseId == 'mysql')LIMIT 1${j}{end}
+	</select>
+
+	<!-- GET BY IDS -->
+	<select id="getByIds" resultMap="$!{entity.code}ResultMap" lang="velocity">
+		SELECT * FROM $!{entity.tableName} T0
+		WHERE 
+		${j}repeat($_parameter.ids $id "," " T0.$!{GenerateHelper.toColumnName($primaryKey.code)} IN (" ")" )
+		  @{id,jdbcType=NUMERIC}
+		${j}end
+	</select>
+
+	<!-- INSERT -->
+	<sql id="INSERT_SQL" lang="velocity">
+		#set($_counter = 0)
+INSERT INTO $!{entity.tableName} (
+	#foreach($column in $columns)
+	#if($column.indexType == 'PRIMARY')
+	${j}if(${d}_databaseId == 'oracle')$!{GenerateHelper.toColumnName($primaryKey.code)}#if($velocityCount < $columns.size()),#{end}${j}end
+	#else
+$!{GenerateHelper.toColumnName($column.code)}#if($velocityCount < $columns.size()),#{end}
+
+	#end
+	#end
+) VALUES (
+#foreach($column in $columns)
+#if($column.indexType == 'PRIMARY')
+			${j}if(${d}_databaseId == 'oracle')@{_parameter.$!{primaryKey.code},jdbcType=$!{GenerateHelper.toJdbcType($primaryKey.type)}}#if($velocityCount < $columns.size()),#{end}${j}end
+#else
+			@{_parameter.$!{column.code},jdbcType=$!{GenerateHelper.toJdbcType($column.type)}}#if($velocityCount < $columns.size()),#{end}
+
+#end
+#end
+		)
+	</sql>
+	<insert id="insert" parameterType="$!{entity.className}" keyProperty="$!{primaryKey.code}" keyColumn="$!{GenerateHelper.toColumnName($primaryKey.code)}" lang="velocity" databaseId="oracle">
+		<selectKey keyProperty="$!{primaryKey.code}" resultType="$!{primaryKey.type.toLowerCase()}" order="BEFORE">
+			<include refid="SEQUENCE" />
+		</selectKey>
+		<include refid="INSERT_SQL" />
+	</insert>
+	<insert id="insert" parameterType="$!{entity.className}" keyProperty="$!{primaryKey.code}" keyColumn="$!{GenerateHelper.toColumnName($primaryKey.code)}" lang="velocity">
+		<include refid="INSERT_SQL" />
+		<selectKey keyProperty="$!{primaryKey.code}" resultType="$!{primaryKey.type.toLowerCase()}" order="AFTER">
+			<include refid="_PUBLIC_V.SELECT_KEY" />
+		</selectKey>
+	</insert>
+	<insert id="insertWithId" parameterType="$!{entity.className}" lang="velocity">
+		<include refid="INSERT_SQL" />
+	</insert>
+	<insert id="insertBatch" parameterType="java.util.List">
+		INSERT INTO $!{entity.tableName}(
+			 #foreach($column in $columns)
+				$!{GenerateHelper.toColumnName($column.code)} #if($velocityCount < $columns.size()),#{end}
+			 #end
+		) 
+		SELECT $!{seqName}.NEXTVAL,A.* FROM ( 
+	    <foreach collection="list" item="item" index="index" separator="UNION ALL">
+			SELECT 
+			#foreach($column in $columns)
+            #if($column.indexType == 'PRIMARY')
+            			
+            #else
+            			${j}{item.$!{column.code},jdbcType=$!{GenerateHelper.toJdbcType($column.type)}}#if($velocityCount < $columns.size()),#{end}
+            
+			#end
+			#end
+			FROM DUAL
+		</foreach>
+		) A
+	</insert>
+
+	<!-- UPDATE -->
+	<update id="update" parameterType="$!{entity.className}" lang="velocity">
+		UPDATE $!{entity.tableName}
+		${j}mset()
+		<![CDATA[
+#set($_counter = 0)
+#foreach($column in $columns)
+#if($column.indexType == 'PRIMARY')
+#else
+			${j}ifNotNull(${d}_parameter.$!{column.code}) $!{GenerateHelper.toColumnName($column.code)} = @{_parameter.$!{column.code},jdbcType=$!{GenerateHelper.toJdbcType($column.type)}}, ${j}{end}
+#end
+#end
+		]]>
+		${j}end
+		WHERE $!{GenerateHelper.toColumnName($primaryKey.code)} =  @{_parameter.$!{primaryKey.code}, jdbcType=$!{GenerateHelper.toJdbcType($primaryKey.type)}}
+	</update>
+
+	<!-- DELETE -->
+	<delete id="deleteById" parameterType="$!{primaryKey.type.toLowerCase()}" lang="velocity">
+		DELETE FROM $!{entity.tableName} WHERE $!{GenerateHelper.toColumnName($primaryKey.code)} = @{_parameter,jdbcType=NUMERIC}
+	</delete>
+	
+	<delete id="deleteByIds" parameterType="$!{primaryKey.type.toLowerCase()}" lang="velocity">
+		DELETE FROM $!{entity.tableName} T0 WHERE 
+		${j}repeat( $_parameter.ids $id "," " T0.$!{GenerateHelper.toColumnName($primaryKey.code)} IN (" ")" )
+		  @{id,jdbcType=NUMERIC}
+		${j}end
+	</delete>
+	
+	<delete id="deleteByCondition" parameterType="$!{entity.className}" lang="velocity">
+		DELETE FROM $!{entity.tableName} WHERE 1=1
+        #foreach($column in $columns)
+        	${j}ifNotNull(${d}_parameter.$!{column.code}) AND $!{GenerateHelper.toColumnName($column.code)} = @{_parameter.$!{column.code},jdbcType=$!{GenerateHelper.toJdbcType($column.type)}} ${j}{end}
+        #end
+	</delete>
+
+	<!-- get -->
+	<select id="getAll" resultMap="$!{entity.code}ResultMap" parameterType="$!{primaryKey.type.toLowerCase()}" lang="velocity">
+		SELECT * FROM $!{entity.tableName} T0
+	</select>
+	
+	<select id="getByCondition" resultMap="$!{entity.code}ResultMap" parameterType="$!{entity.className}" lang="velocity">
+		SELECT * FROM $!{entity.tableName} T0 WHERE 1=1
+		#foreach($column in $columns)
+        	${j}ifNotNull(${d}_parameter.$!{column.code}) AND $!{GenerateHelper.toColumnName($column.code)} = @{_parameter.$!{column.code},jdbcType=$!{GenerateHelper.toJdbcType($column.type)}} ${j}{end}
+        #end
+	</select>
+
+    <sql id="SEARCH_CONDITION_SQL" lang="velocity">
+        <![CDATA[
+		${j}where()
+			#*${j}if(${d}_parameter.condition.id)
+				ID = @{_parameter.condition.id,jdbcType=NUMERIC}
+			${j}end*#
+			#foreach($column in $columns)
+				${j}ifNotNull(${d}_parameter.condition.$!{column.code}) AND $!{GenerateHelper.toColumnName($column.code)} = @{_parameter.condition.$!{column.code},jdbcType=$!{GenerateHelper.toJdbcType($column.type)}} ${j}{end}
+			#end
+		${j}end
+		]]>
+    </sql>
+
+	<select id="selectPager" lang="velocity" resultMap="$!{entity.code}ResultMap">
+		<include refid="_PUBLIC_V.PAGER_BEFORE"/>
+		SELECT * FROM $!{entity.tableName}
+		<include refid="SEARCH_CONDITION_SQL"/>
+		${j}newOrder(${d}_parameter.condition,"ID DESC")
+		<include refid="_PUBLIC_V.PAGER_AFTER"/>
+	</select>
+
+	<select id="countPager" lang="velocity" resultType="long">
+		SELECT COUNT(0) FROM $!{entity.tableName} <include refid="SEARCH_CONDITION_SQL"/>
+	</select>
+
+	<delete id="batchDelete" lang="velocity">
+		DELETE FROM $!{entity.tableName}
+		${j}where()
+			${j}in( ${d}_parameter.ids ${d}id "id" )
+				@{id}
+			${j}end
+		${j}end
+	</delete>
+
+#foreach($view in $views)
+
+  #if($view.type == "TRAN_EDIT" || $view.type == "TRAN_VIEW")
+  <!-- ========================= $!{view.name} 查询语句 开始 ========================= -->
+  <select id="getForView$!{GenerateHelper.toClassName($view.visitName)}" resultMap="$!{entity.code}ResultMap" parameterType="$!{primaryKey.type.toLowerCase()}" lang="velocity">
+    SELECT * FROM $!{entity.tableName} T0
+    WHERE
+      T0.$!{GenerateHelper.toColumnName($primaryKey.code)} = @{_parameter, jdbcType=$!{GenerateHelper.toJdbcType($primaryKey.type)}}
+      ${j}if(${d}_databaseId == 'mysql')LIMIT 1${j}{end}
+  </select>
+  <!-- ========================= $!{view.name} 查询语句 结束 ========================= -->
+  #end
+
+  #if($view.type == "TRAN_LIST" || $view.type == "TRAN_REFER")
+  <!-- ========================= $!{view.name} 分页查询语句 开始 ========================= -->
+  <select id="selectPagerForView$!{GenerateHelper.toClassName($view.visitName)}" lang="velocity" resultMap="$!{entity.code}ResultMap">
+  	<include refid="_PUBLIC_V.PAGER_BEFORE"/>
+	 <![CDATA[SELECT * FROM $!{entity.tableName} T0
+	  ]]>
+  	<include refid="searchConditionForView$!{GenerateHelper.toClassName($view.visitName)}"/>
+  	#order($_parameter.condition,"T0.ID DESC")
+  	<include refid="_PUBLIC_V.PAGER_AFTER"/>
+  </select>
+
+  <select id="selectPagerForView$!{GenerateHelper.toClassName($view.visitName)}" lang="velocity" resultMap="$!{entity.code}ResultMap" databaseId="sqlserver">
+  	<include refid="_PUBLIC_V.PAGER_BEFORE"/>
+	<![CDATA[SELECT * 
+	 ]]>
+  	<include refid="_PUBLIC_V.ROW_NUMBER_OVER" />
+  	#order($_parameter.condition,"T0.ID DESC")
+  	<include refid="_PUBLIC_V.AS_ROW_NUM" />
+  <![CDATA[$!{view.relatedSQL[2]}
+  ]]>
+  	<include refid="searchConditionForView$!{GenerateHelper.toClassName($view.visitName)}"/>
+  	<include refid="_PUBLIC_V.PAGER_AFTER"/>
+  </select>
+
+  <select id="countPagerForView$!{GenerateHelper.toClassName($view.visitName)}" lang="velocity" resultType="long">
+  SELECT COUNT(*) $!{view.relatedSQL[2]}
+  </select>
+
+  <sql id="searchConditionForView$!{GenerateHelper.toClassName($view.visitName)}" lang="velocity">
+    ${j}where()
+<![CDATA[
+$!{view.relatedSQL[3]}
+]]>
+    ${j}end
+  </sql>
+  <!-- ========================= $!{view.name} 分页查询语句 结束 ========================= -->
+  #end
+#end
+
+</mapper>

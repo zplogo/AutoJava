@@ -1,0 +1,16 @@
+###parse('/produce/entity/templates/_class_copyright.vm')
+package $!{entity.group.packageName}.services.impl;
+
+import $!{entity.group.packageName.replace("com.supconit.", "hc.")}.services.impl.Abstract$!{entity.code}ServiceImpl;
+import $!{entity.group.packageName}.services.$!{entity.code}Service;
+import org.springframework.stereotype.Service;
+/**
+ * @author $!{currentUser.email}
+ * @create $!{now}
+ * @since $!{version}
+ * 
+ */
+@Service("$!{entity.group.module.project.code.toLowerCase()}_$!{entity.group.module.code.toLowerCase()}_$!{entity.group.code.toLowerCase()}_$!{entity.code.toLowerCase()}_service")
+public class $!{entity.code}ServiceImpl extends Abstract$!{entity.code}ServiceImpl implements $!{entity.code}Service {
+	
+}

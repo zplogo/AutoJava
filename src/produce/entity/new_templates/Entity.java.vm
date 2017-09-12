@@ -1,0 +1,125 @@
+###parse('/produce/entity/templates/_class_copyright.vm')
+package $!{entity.group.packageName.replace("com.supconit.", "hc.")}.entities;
+
+import com.alibaba.fastjson.annotation.JSONField;
+import com.supconit.ticc.domains.NewOrderable;
+import hc.base.domains.OrderPart;
+import java.util.Date;
+import java.util.Map;
+
+/**
+ * @author $!{currentUser.email}
+ * @create $!{now}
+ * @since $!{version}
+ *
+ */
+public class $!{entity.code} extends $!{entity.entityConfigBean.extend.extendClassName} implements NewOrderable
+{
+
+	private static final long	serialVersionUID	= -$!{serialVersion}L;
+
+	#foreach($column in $columns)
+	#if($column.basic || $column.code == $primaryKey.code)
+	#else
+	/**
+	 * $!{column.name}
+	 */
+#if($column.type == 'DateTime')@JSONField(format = "yyyy-MM-dd HH:mm:ss")#end
+#if($column.type == 'Date')@JSONField(format = "yyyy-MM-dd")#end
+#if($column.type == 'Time')@JSONField(format = "HH:mm:ss")#end
+	private $GenerateHelper.toJavaType($column.type) $!{column.code};
+	#end
+	#end
+
+	#foreach($associate in $associates)
+	/**
+	 * $!{associate.name}
+	 */
+	private
+		#if($associate.type == 'ONE2MANY' || $associate.type == 'MANY2MANY')
+		java.util.List<$!{associate.targetEntity.className}>
+		#else
+		$!{associate.targetEntity.className}
+		#end
+		$!{associate.propertyName};
+	#end
+
+
+	#foreach($column in $columns)
+	#if($column.basic || $column.code == $primaryKey.code)
+	#else
+	/**
+	 * 获取$!{column.name}
+	 * @return $!{column.name}
+	 */
+	public $GenerateHelper.toJavaType($column.type) $GenerateHelper.toGetter($column.code)(){
+		return this.$column.code;
+	}
+	/**
+	 * 设置$!{column.name}
+	 * @param $!{column.code}
+	 */
+	public void $GenerateHelper.toSetter($column.code)($GenerateHelper.toJavaType($column.type) $!{column.code}){
+		this.$!{column.code} = $!{column.code};
+	}
+	#end
+	#end
+
+	#foreach($associate in $associates)
+	/**
+	 * 获取$!{associate.name}
+	 * @return $!{associate.name}
+	 */
+	public
+		#if($associate.type == 'ONE2MANY' || $associate.type == 'MANY2MANY')
+		java.util.List<$!{associate.targetEntity.className}>
+		#else
+		$!{associate.targetEntity.className}
+		#end
+		$GenerateHelper.toGetter($associate.propertyName)(){
+			return this.$!{associate.propertyName};
+		}
+	/**
+	 * 设置$!{associate.name}
+	 * @param $!{associate.propertyName}
+	 */
+	public void $GenerateHelper.toSetter($associate.propertyName)(
+	#if($associate.type == 'ONE2MANY' || $associate.type == 'MANY2MANY')
+		java.util.List<$!{associate.targetEntity.className}>
+		#else
+		$!{associate.targetEntity.className}
+		#end
+	 $!{associate.propertyName}){
+		this.$!{associate.propertyName} = $!{associate.propertyName};
+	}
+	#end
+
+	public $!{entity.code}($!{primaryKey.type} id) {
+		this.id = id;
+	}
+	public $!{entity.code}() {
+	}
+	/**
+	 * map中会有两个字段
+	 * field:排序字段名
+	 * dir:排序方式（asc,desc）
+	 */
+	protected Map[] sort;
+
+	public Map[] getSort() {
+		return sort;
+	}
+
+	public void setSort(Map[] sort) {
+		this.sort = sort;
+	}
+	@Override
+	public Map[] getOrderParts() {
+		return getSort();
+	}
+
+	@Override
+	public void setOrderParts(Map[] orderParts) {
+		setSort(orderParts);
+	}
+}
